@@ -20,20 +20,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
       - name: Extract project
-        run: |
-          unzip -o ECHOES_Android_Build_v2.zip -d extracted
-
-      - name: Locate project
-        run: |
-          find extracted -name settings.gradle
+        run: unzip -o ECHOES_Android_Build_v2.zip -d extracted
 
       - name: Build APK
         run: |
-          cd extracted/ECHOES_Android_Build_v2
+          PROJECT_DIR="$(dirname "$(find extracted -name settings.gradle -print -quit)")"
+          echo "Project directory: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
           gradle assembleDebug
 
       - name: Upload APK
